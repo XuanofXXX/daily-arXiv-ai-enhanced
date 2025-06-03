@@ -3,12 +3,15 @@ name: Notify on Commit
 on:
   push:
     branches:
-      - main  # 你可以修改为你希望监控的分支，例如 'develop' 或 '*' 代表所有分支
+      - main
 
 jobs:
   create-issue:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Get commit message
         id: get_commit
         run: echo "message=$(git log -1 --pretty=format:%s)" >> $GITHUB_OUTPUT
@@ -18,8 +21,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "New Commit: ${{ steps.get_commit.outputs.message }}"
-          content-filepath: .github/commit-issue-template.md # 指向 Issue 内容的模板文件
-          assignees: ${{ github.actor }} # 将 issue 指派给触发此工作流的用户（也就是你自己）
-          labels: | # 为 issue 添加标签
+          content-filepath: .github/commit-issue-template.md
+          assignees: ${{ github.actor }}
+          labels: |
             auto-generated
             notification
